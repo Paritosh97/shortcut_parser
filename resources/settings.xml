@@ -1,0 +1,4 @@
+<settings>
+    <setting id="auto_refresh" type="boolean" label="Auto Refresh Shortcuts" default="true" />
+    <setting id="refresh_interval" type="integer" label="Refresh Interval (minutes)" default="10" />
+</settings>
