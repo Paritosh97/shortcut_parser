@@ -5,9 +5,20 @@ import subprocess
 import xbmcaddon
 import xbmcgui
 
-# Windows-only import
-if platform.system() == "Windows":
+import sys
+
+# Add the local "libs" folder to sys.path
+ADDON_DIR = os.path.dirname(__file__)
+LIBS_DIR = os.path.join(ADDON_DIR, "libs")
+
+if LIBS_DIR not in sys.path:
+    sys.path.append(LIBS_DIR)
+
+# Now try importing win32com
+try:
     import win32com.client  # For parsing .lnk files
+except ImportError:
+    win32com = None
 
 ADDON = xbmcaddon.Addon()
 PROFILE_DIR = ADDON.getAddonInfo('profile')
