@@ -1,4 +1,4 @@
 <settings>
-    <setting id="auto_refresh" type="boolean" label="Auto Refresh Shortcuts" default="true" />
-    <setting id="refresh_interval" type="integer" label="Refresh Interval (minutes)" default="10" />
+    <setting id="auto_refresh" type="bool" label="Auto Refresh" default="false" />
+    <setting id="refresh_interval" type="slider" label="Refresh Interval (seconds)" default="30" range="0,100" option="int" />
 </settings>

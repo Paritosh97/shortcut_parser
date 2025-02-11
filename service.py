@@ -4,15 +4,11 @@ import time
 from shortcuts import get_shortcuts
 
 ADDON = xbmcaddon.Addon()
+MONITOR_INTERVAL = 10  # Check every 10 seconds
 
-def auto_refresh():
-    settings = ADDON.getSetting("auto_refresh")
-    refresh_interval = int(ADDON.getSetting("refresh_interval"))
+xbmc.log("🚀 Shortcut Parser Service Started!", xbmc.LOGINFO)
 
-    while settings:
-        xbmc.executebuiltin("Container.Refresh")
-        time.sleep(refresh_interval * 60)
-        settings = ADDON.getSetting("auto_refresh")
-
-if __name__ == '__main__':
-    auto_refresh()
+while not xbmc.abortRequested:
+    shortcuts = get_shortcuts()
+    xbmc.log(f"🔄 Found {len(shortcuts)} shortcuts.", xbmc.LOGINFO)
+    time.sleep(MONITOR_INTERVAL)

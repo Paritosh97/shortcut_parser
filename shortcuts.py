@@ -4,27 +4,24 @@ import json
 import subprocess
 import xbmcaddon
 import xbmcgui
-
 import sys
 
-# Add the local "libs" folder to sys.path
-ADDON_DIR = os.path.dirname(__file__)
-LIBS_DIR = os.path.join(ADDON_DIR, "libs")
+# Add-on directories
+ADDON = xbmcaddon.Addon()
+PROFILE_DIR = xbmc.translatePath(ADDON.getAddonInfo('profile'))
 
-if LIBS_DIR not in sys.path:
-    sys.path.append(LIBS_DIR)
+# Ensure the profile directory exists
+if not os.path.exists(PROFILE_DIR):
+    os.makedirs(PROFILE_DIR)
 
-# Now try importing win32com
+GROUPS_FILE = os.path.join(PROFILE_DIR, "groups.json")
+SETTINGS_FILE = os.path.join(PROFILE_DIR, "settings.json")
+
+# Import Windows-specific library
 try:
     import win32com.client  # For parsing .lnk files
 except ImportError:
     win32com = None
-
-ADDON = xbmcaddon.Addon()
-PROFILE_DIR = ADDON.getAddonInfo('profile')
-
-GROUPS_FILE = os.path.join(PROFILE_DIR, "groups.json")
-SETTINGS_FILE = os.path.join(PROFILE_DIR, "settings.json")
 
 def load_settings():
     if os.path.exists(SETTINGS_FILE):
@@ -60,7 +57,7 @@ def get_shortcuts():
             shortcut_path = os.path.join(folder, filename)
             shortcut_info = None
 
-            if platform.system() == "Windows" and filename.endswith(".lnk"):
+            if platform.system() == "Windows" and filename.endswith(".lnk") and win32com:
                 shell = win32com.client.Dispatch("WScript.Shell")
                 link = shell.CreateShortcut(shortcut_path)
                 shortcut_info = {
@@ -108,7 +105,7 @@ def launch_shortcut(target):
 
 def manage_settings():
     dialog = xbmcgui.Dialog()
-    options = ["Toggle Auto Refresh", "Set Refresh Interval (minutes)", "Manage Groups"]
+    options = ["Toggle Auto Refresh", "Set Refresh Interval (seconds)", "Manage Groups"]
     choice = dialog.select("Settings", options)
 
     settings = load_settings()
@@ -116,7 +113,7 @@ def manage_settings():
         settings["auto_refresh"] = not settings["auto_refresh"]
         save_settings(settings)
     elif choice == 1:
-        new_interval = dialog.input("Enter Refresh Interval (minutes)", type=xbmcgui.INPUT_NUMERIC)
+        new_interval = dialog.input("Enter Refresh Interval (seconds)", type=xbmcgui.INPUT_NUMERIC)
         if new_interval.isdigit():
             settings["refresh_interval"] = int(new_interval)
             save_settings(settings)
